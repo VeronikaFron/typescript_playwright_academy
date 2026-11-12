@@ -1,41 +1,59 @@
-import { expect, Locator, Page } from "@playwright/test";
-import { LoginPage } from "./login_page.ts";
-import { ProjectsPage } from "./projects_page.ts";
+// src/pages/pmtool/login_page.ts
 
-export class DashboardPage {
+import { Locator, Page } from "@playwright/test";
+import { DashboardPage } from "./dashboard_page.ts";
+import { LostPasswordPage } from "./lost_password_page.ts";
+
+export class LoginPage {
   private readonly page: Page;
-  private readonly profileButton: Locator;
-  private readonly logoutButton: Locator;
-  private readonly notificationButton: Locator;
-  private readonly projectsButton;
+  private readonly url = "https://tredgate.com/pmtool"; // ? Použijeme jen na prvním PO (LoginPage), odkud budeme PMTool otevírat
+  private readonly usernameInput: Locator;
+  private readonly passwordInput: Locator;
+  private readonly loginButton: Locator;
+  private readonly passwordForgottenButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.profileButton = this.page.locator("#user_dropdown");
-    this.logoutButton = this.page.locator("#logout");
-    this.notificationButton = this.page.locator("#user_notifications_report");
-    this.projectsButton = this.page.locator("#Projects");
+    this.usernameInput = page.locator("//input[@id='username']");
+    this.passwordInput = page.locator("#password");
+    this.loginButton = page.locator('[type="submit"]');
+    this.passwordForgottenButton = page.locator("#forget_password");
   }
 
-  async clickProfile() {
-    await expect(this.notificationButton).toBeVisible();
-    await this.profileButton.click();
+  // Při vytváření metod doporučím přístup začít s atomickými (malými) metodami s jedním krokem a pak vytvářet sdružující metody
+  // Například: typeUsername - jeden krok, login - sdružení více kroků
+  // Atomické metody používáme, když danou funkcionalitu testujeme a sdružující metody například pro preconditions jiných testů
+
+  // ? Typová anotace `Promise<this>` není povinná, určí se implicitně -> doporučení: dávat ke složitějším metodám
+  async open(): Promise<this> {
+    await this.page.goto(this.url);
     return this;
   }
 
-  async clickLogout() {
-    await this.logoutButton.click();
-    return new LoginPage(this.page);
+  async fillUsername(username: string) {
+    await this.usernameInput.fill(username);
+    return this;
   }
 
-  async logout() {
-    await this.clickProfile();
-    await this.clickLogout();
-    return new LoginPage(this.page);
+  async fillPassword(password: string) {
+    await this.passwordInput.fill(password);
+    return this;
   }
 
-  async clickProjects() {
-    await this.projectsButton.click();
-    return new ProjectsPage(this.page);
+  async clickLogin() {
+    await this.loginButton.click();
+    return new DashboardPage(this.page);
+  }
+
+  async login(username: string, password: string) {
+    await this.fillUsername(username);
+    await this.fillPassword(password);
+    await this.clickLogin();
+    return new DashboardPage(this.page);
+  }
+
+  async clickPasswordForgotten() {
+    await this.passwordForgottenButton.click();
+    return new LostPasswordPage(this.page);
   }
 }
