@@ -20,6 +20,9 @@
   "homepage": "https://github.com/VeronikaFron/typescript_playwright_academy#readme",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@faker-js/faker": "^10.6.0",
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^26.6.6",
     "eslint": "^10.13.0",
     "eslint-config-prettier": "^10.1.8",
     "tsx": "^4.23.15",
