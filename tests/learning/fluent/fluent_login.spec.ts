@@ -1,6 +1,6 @@
 // tests/learning/fluent/fluent_login.spec.ts
 import { test } from "@playwright/test";
-import { LoginPage } from "../../../../src/pages/pmtool/login_page.ts";
+import { LoginPage } from "../../../src/pages/pmtool/login_page.ts";
 
 test("Login And Logout using Fluent Interface", async ({ page }) => {
   const loginPage = new LoginPage(page);
